@@ -9,6 +9,7 @@ Usage
 ```php
 $rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"]);
 try {
+	// allow a maximum of 100 requests for the IP in 5 minutes
 	$rateLimiter->limitRequestsInMinutes(100, 5);
 } catch (RateExceededException $e) {
 	header("HTTP/1.0 529 Too Many Requests");
