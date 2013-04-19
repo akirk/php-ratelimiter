@@ -51,7 +51,7 @@ class RateLimiter {
 		$keys = array();
 		$now = time();
 		for ($time = $now - $minutes * 60; $time <= $now; $time += 60) {
-			$keys[] = $this->prefix . date("YmdHi", $time);
+			$keys[] = $this->prefix . date("dHi", $time);
 		}
 
 		return $keys;
