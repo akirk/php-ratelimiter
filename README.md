@@ -1,7 +1,9 @@
 php-ratelimiter
 ===============
 
-A small script that uses Memcache to allow only a certain number of requests per a certain amount of minutes.
+A small class that uses Memcache to allow only a certain number of requests per a certain amount of minutes.
+
+The class works around the problem that the timeframe is constantly moving, i.e. every new minute the timeframe is different. See my [blogpost](http://alexander.kirk.at/2013/04/19/add-a-rate-limit-to-your-website/).
 
 Usage
 -----
