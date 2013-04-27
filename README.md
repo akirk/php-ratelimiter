@@ -5,6 +5,8 @@ A small class that uses Memcache to allow only a certain number of requests per 
 
 The class works around the problem that the timeframe is constantly moving, i.e. every new minute the timeframe is different. See my [blogpost](http://alexander.kirk.at/2013/04/19/add-a-rate-limit-to-your-website/).
 
+The code is released under an MIT license.
+
 Usage
 -----
 
