@@ -1,0 +1,16 @@
+{
+    "name": "akirk/php-ratelimiter",
+    "description": "A small class that uses Memcache to allow only a certain number of requests per a certain amount of minutes.",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.5",
+        "ext-memcache": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Akirk\\Ratelimiter\\": "src/"
+        }
+    }
+}

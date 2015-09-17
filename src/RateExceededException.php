@@ -1,4 +1,5 @@
 <?php
+
 /*
 Copyright (c) 2013 Alexander Kirk
 http://alexander.kirk.at/
@@ -24,39 +25,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-class RateExceededException extends Exception {}
+namespace Akirk\Ratelimiter;
 
-class RateLimiter {
-	private $prefix, $memcache;
-	public function __construct(Memcache $memcache, $ip, $prefix = "rate") {
-		$this->memcache = $memcache;
-		$this->prefix = $prefix . $ip;
-	}
+use Exception;
 
-	public function limitRequestsInMinutes($allowedRequests, $minutes) {
-		$requests = 0;
-
-		foreach ($this->getKeys($minutes) as $key) {
-			$requestsInCurrentMinute = $this->memcache->get($key);
-			if (false !== $requestsInCurrentMinute) $requests += $requestsInCurrentMinute;
-		}
-
-		if (false === $requestsInCurrentMinute) {
-			$this->memcache->set($key, 1, 0, $minutes * 60 + 1);
-		} else {
-			$this->memcache->increment($key, 1);
-		}
-
-		if ($requests > $allowedRequests) throw new RateExceededException;
-	}
-
-	private function getKeys($minutes) {
-		$keys = array();
-		$now = time();
-		for ($time = $now - $minutes * 60; $time <= $now; $time += 60) {
-			$keys[] = $this->prefix . date("dHi", $time);
-		}
-
-		return $keys;
-	}
-}
+class RateExceededException extends Exception {  }
