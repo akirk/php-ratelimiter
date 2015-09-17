@@ -21,7 +21,8 @@ try {
 } catch (\Akirk\Ratelimiter\RateExceededException $e) {
 	header("HTTP/1.0 529 Too Many Requests");
 	exit;
-}```
+}
+```
 
 Remarks
 -------
@@ -37,6 +38,7 @@ try { ... }
 
 // script2.php
 $rateLimiter = new \Akirk\Ratelimiter\Ratelimiter(new \Memcache(), $_SERVER["REMOTE_ADDR"], "script2");
-try { ... }```
+try { ... }
+```
 
 You can also use something else as a second parameter, for example a `session_id` to limit the requests per user instead of IP address.
