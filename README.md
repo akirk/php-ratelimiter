@@ -7,15 +7,18 @@ The class works around the problem that the timeframe is constantly moving, i.e.
 
 The code is released under an MIT license.
 
+Installation
+-----
+    composer require akirk/php-ratelimiter
+
 Usage
 -----
-
 ```php
-$rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"]);
+$rateLimiter = new \Akirk\Ratelimiter\Ratelimiter(new \Memcache(), $_SERVER["REMOTE_ADDR"]);
 try {
 	// allow a maximum of 100 requests for the IP in 5 minutes
 	$rateLimiter->limitRequestsInMinutes(100, 5);
-} catch (RateExceededException $e) {
+} catch (\Akirk\Ratelimiter\RateExceededException $e) {
 	header("HTTP/1.0 529 Too Many Requests");
 	exit;
 }
@@ -30,10 +33,11 @@ If you want to protect multiple resources with different limits, use the third p
 
 ```php
 // script1.php
-$rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"], "script1");
+$rateLimiter = new \Akirk\Ratelimiter\Ratelimiter(new \Memcache(), $_SERVER["REMOTE_ADDR"], "script1");
 try { ... }
+
 // script2.php
-$rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"], "script2");
+$rateLimiter = new \Akirk\Ratelimiter\Ratelimiter(new \Memcache(), $_SERVER["REMOTE_ADDR"], "script2");
 try { ... }
 ```
 
