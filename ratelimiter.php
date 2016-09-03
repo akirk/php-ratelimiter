@@ -27,10 +27,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class RateExceededException extends Exception {}
 
 class RateLimiter {
-	private $prefix, $memcache;
+	private $prefix, $memcache , $keysvisited;
+	// how long should we keep memcache entries
+	public $maxMinutes=10;
+
 	public function __construct(Memcache $memcache, $ip, $prefix = "rate") {
 		$this->memcache = $memcache;
+		if (!$memcache) {
+			echo "Problem connecting to memcache server";
+			exit;
+		}
 		$this->prefix = $prefix . $ip;
+		$keysvisited=array();
 	}
 
 	public function limitRequestsInMinutes($allowedRequests, $minutes) {
@@ -38,15 +46,28 @@ class RateLimiter {
 
 		foreach ($this->getKeys($minutes) as $key) {
 			$requestsInCurrentMinute = $this->memcache->get($key);
+
+			// if the key is read for a second or third tim in the same 
+			// php execution, we remove the previous additions so that the 
+			// last call reports correct numbers
+			if ($this->keysvisited[$key]) {
+				$requestsInCurrentMinute-=$this->keysvisited[$key];
+			}			
 			if (false !== $requestsInCurrentMinute) $requests += $requestsInCurrentMinute;
 		}
 
-		if (false === $requestsInCurrentMinute) {
-			$this->memcache->set($key, 1, 0, $minutes * 60 + 1);
+		if (! $this->keysvisited[$key] ) {
+			if (false === $requestsInCurrentMinute) {
+				$this->memcache->set($key, 1, 0, $this->maxMinutes * 60 + 1);
+			} else {
+				$this->memcache->increment($key, 1);
+			}
+			$this->keysvisited[$key]=1;
 		} else {
-			$this->memcache->increment($key, 1);
+			$this->keysvisited[$key]++;
 		}
 
+		echo " You already have $requests requests in $minutes min<BR>";
 		if ($requests > $allowedRequests) throw new RateExceededException;
 	}
 
