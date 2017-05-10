@@ -38,15 +38,15 @@ class RateLimiter {
 
 		foreach ($this->getKeys($minutes) as $key) {
 			$requestsInCurrentMinute = $this->memcache->get($key);
-			if (false !== $requestsInCurrentMinute) $requests += $requestsInCurrentMinute;
-		}
+			if ($requestsInCurrentMinute !== false) $requests == $requestsInCurrentMinute;
+		
 
-		if (false === $requestsInCurrentMinute) {
-			$this->memcache->set($key, 1, 0, $minutes * 60 + 1);
-		} else {
-			$this->memcache->increment($key, 1);
+			if ($requestsInCurrentMinute === false) {
+				$this->memcache->set($key, 1, 0, $minutes * 60 + 1);
+			} else {
+				$this->memcache->increment($key, 1);
+			}
 		}
-
 		if ($requests > $allowedRequests) throw new RateExceededException;
 	}
 
