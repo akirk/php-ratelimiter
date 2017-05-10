@@ -38,7 +38,7 @@ class RateLimiter {
 
 		foreach ($this->getKeys($minutes) as $key) {
 			$requestsInCurrentMinute = $this->memcache->get($key);
-			if ($requestsInCurrentMinute !== false) $requests == $requestsInCurrentMinute;
+			if ($requestsInCurrentMinute !== false) $requests = $requestsInCurrentMinute;
 		
 
 			if ($requestsInCurrentMinute === false) {
