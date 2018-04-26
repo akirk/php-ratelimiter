@@ -27,9 +27,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class RateExceededException extends Exception {}
 
 class RateLimiter {
-	private $prefix, $memcache;
-	public function __construct(Memcache $memcache, $ip, $prefix = "rate") {
-		$this->memcache = $memcache;
+	private $prefix, $memcached;
+	public function __construct($ip, $prefix = "rate", $port=11211) {
+		$this->memcached = new Memcached();
+        $this->memcached->addServer('localhost', $port);
 		$this->prefix = $prefix . $ip;
 	}
 
@@ -37,21 +38,21 @@ class RateLimiter {
 		$requests = 0;
 
 		foreach ($this->getKeys($minutes) as $key) {
-			$requestsInCurrentMinute = $this->memcache->get($key);
+			$requestsInCurrentMinute = $this->memcached->get($key);
 			if (false !== $requestsInCurrentMinute) $requests += $requestsInCurrentMinute;
 		}
 
 		if (false === $requestsInCurrentMinute) {
-			$this->memcache->set($key, 1, 0, $minutes * 60 + 1);
+			$this->memcached->set($key, 1, ($minutes + 1) * 60);
 		} else {
-			$this->memcache->increment($key, 1);
+			$this->memcached->increment($key);
 		}
 
 		if ($requests > $allowedRequests) throw new RateExceededException;
 	}
 
 	private function getKeys($minutes) {
-		$keys = array();
+		$keys = [];
 		$now = time();
 		for ($time = $now - $minutes * 60; $time <= $now; $time += 60) {
 			$keys[] = $this->prefix . date("dHi", $time);
@@ -60,3 +61,4 @@ class RateLimiter {
 		return $keys;
 	}
 }
+
