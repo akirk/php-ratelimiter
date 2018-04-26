@@ -1,7 +1,9 @@
 php-ratelimiter
 ===============
 
-A small class that uses Memcache to allow only a certain number of requests per a certain amount of minutes.
+> NOTE: this was previously working with memcache, but I adjusted it to work with memcached (with a d).
+
+A small class that uses Memcached to allow only a certain number of requests per a certain amount of minutes.
 
 The class works around the problem that the timeframe is constantly moving, i.e. every new minute the timeframe is different. See my [blogpost](http://alexander.kirk.at/2013/04/19/add-a-rate-limit-to-your-website/).
 
@@ -11,7 +13,7 @@ Usage
 -----
 
 ```php
-$rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"]);
+$rateLimiter = new RateLimiter($_SERVER["REMOTE_ADDR"]);
 try {
 	// allow a maximum of 100 requests for the IP in 5 minutes
 	$rateLimiter->limitRequestsInMinutes(100, 5);
@@ -30,10 +32,10 @@ If you want to protect multiple resources with different limits, use the third p
 
 ```php
 // script1.php
-$rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"], "script1");
+$rateLimiter = new RateLimiter($_SERVER["REMOTE_ADDR"], "script1");
 try { ... }
 // script2.php
-$rateLimiter = new RateLimiter(new Memcache(), $_SERVER["REMOTE_ADDR"], "script2");
+$rateLimiter = new RateLimiter($_SERVER["REMOTE_ADDR"], "script2");
 try { ... }
 ```
 
